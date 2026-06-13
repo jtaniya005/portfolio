@@ -46,6 +46,8 @@ class _PortfolioPageState extends State<PortfolioPage> {
   final GlobalKey projectsKey = GlobalKey();
   final GlobalKey contactKey = GlobalKey();
 
+  String _active = 'home';
+
   void scrollToSection(GlobalKey key) {
     final context = key.currentContext;
     if (context != null) {
@@ -55,6 +57,52 @@ class _PortfolioPageState extends State<PortfolioPage> {
         curve: Curves.easeInOutQuart,
         alignment: 0.0,
       );
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_updateActiveSection);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _updateActiveSection());
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_updateActiveSection);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _updateActiveSection() {
+    final sections = {
+      'home': heroKey,
+      'about': aboutKey,
+      'skills': skillsKey,
+      'projects': projectsKey,
+      'contact': contactKey,
+    };
+
+    final centerY = MediaQuery.of(context).size.height / 2;
+    String best = _active;
+    double bestDist = double.infinity;
+
+    sections.forEach((name, key) {
+      final ctx = key.currentContext;
+      if (ctx == null) return;
+      final box = ctx.findRenderObject() as RenderBox?;
+      if (box == null) return;
+      final topLeft = box.localToGlobal(Offset.zero);
+      final sectionCenter = topLeft.dy + box.size.height / 2;
+      final dist = (sectionCenter - centerY).abs();
+      if (dist < bestDist) {
+        bestDist = dist;
+        best = name;
+      }
+    });
+
+    if (best != _active && mounted) {
+      setState(() => _active = best);
     }
   }
 
@@ -77,10 +125,10 @@ class _PortfolioPageState extends State<PortfolioPage> {
               children: [
                 const SizedBox(height: 100), 
                 HeroSection(key: heroKey, onContact: () => scrollToSection(contactKey)),
-                AboutSection(key: aboutKey),
-                SkillsSection(key: skillsKey),
-                ProjectsSection(key: projectsKey),
-                ContactSection(key: contactKey),
+                AboutSection(key: aboutKey, isActive: _active == 'about'),
+                SkillsSection(key: skillsKey, isActive: _active == 'skills'),
+                ProjectsSection(key: projectsKey, isActive: _active == 'projects'),
+                ContactSection(key: contactKey, isActive: _active == 'contact'),
                 const FooterWidget(),
               ],
             ),
@@ -128,12 +176,12 @@ class _PortfolioPageState extends State<PortfolioPage> {
                       if (!isMobile)
                         Row(
                           children: [
-                            _navItem("Home", () => scrollToSection(heroKey)),
-                            _navItem("About", () => scrollToSection(aboutKey)),
-                            _navItem("Skills", () => scrollToSection(skillsKey)),
-                            _navItem("Projects", () => scrollToSection(projectsKey)),
-                            _navItem("Contact", () => scrollToSection(contactKey)),
-                          ],
+                              _navItem("Home", () => scrollToSection(heroKey), _active == 'home'),
+                              _navItem("About", () => scrollToSection(aboutKey), _active == 'about'),
+                              _navItem("Skills", () => scrollToSection(skillsKey), _active == 'skills'),
+                              _navItem("Projects", () => scrollToSection(projectsKey), _active == 'projects'),
+                              _navItem("Contact", () => scrollToSection(contactKey), _active == 'contact'),
+                            ],
                         )
                       else
                         const Icon(Icons.menu_rounded, color: Colors.white),
@@ -148,10 +196,10 @@ class _PortfolioPageState extends State<PortfolioPage> {
     );
   }
 
-  Widget _navItem(String title, VoidCallback onTap) {
+  Widget _navItem(String title, VoidCallback onTap, bool isActive) {
     return Padding(
       padding: const EdgeInsets.only(left: 32),
-      child: NavLink(title: title, onTap: onTap),
+      child: NavLink(title: title, onTap: onTap, isActive: isActive),
     );
   }
 }
@@ -160,7 +208,8 @@ class _PortfolioPageState extends State<PortfolioPage> {
 class NavLink extends StatefulWidget {
   final String title;
   final VoidCallback onTap;
-  const NavLink({super.key, required this.title, required this.onTap});
+  final bool isActive;
+  const NavLink({super.key, required this.title, required this.onTap, this.isActive = false});
 
   @override
   State<NavLink> createState() => _NavLinkState();
@@ -171,6 +220,8 @@ class _NavLinkState extends State<NavLink> {
 
   @override
   Widget build(BuildContext context) {
+    final active = widget.isActive || _isHovered;
+
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       onEnter: (_) => setState(() => _isHovered = true),
@@ -182,7 +233,16 @@ class _NavLinkState extends State<NavLink> {
           style: TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w500,
-            color: _isHovered ? const Color(0xFF4F8CFF) : Colors.white70,
+            color: active ? const Color(0xFF4F8CFF) : Colors.white70,
+            decoration: active ? TextDecoration.underline : TextDecoration.none,
+            shadows: active
+                ? [
+                    Shadow(
+                      color: const Color(0xFF4F8CFF).withOpacity(0.9),
+                      blurRadius: 14,
+                    ),
+                  ]
+                : [],
             fontFamily: 'DM Sans',
           ),
           child: Text(widget.title),

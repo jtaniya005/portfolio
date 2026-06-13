@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import '../widgets/hover_title.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ProjectsSection extends StatelessWidget {
-  const ProjectsSection({super.key});
+  final bool isActive;
+
+  const ProjectsSection({super.key, this.isActive = false});
 
   @override
   Widget build(BuildContext context) {
@@ -20,13 +23,14 @@ class ProjectsSection extends StatelessWidget {
       ),
       child: Column(
         children: [
-          const Text(
-            "My Projects",
-            style: TextStyle(
+          HoverTitle(
+            text: "My Projects",
+            style: const TextStyle(
               fontSize: 48,
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
+            isActive: isActive,
           ),
           const SizedBox(height: 70),
 

@@ -1,10 +1,13 @@
 import 'dart:convert';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import '../widgets/hover_title.dart';
 import 'package:http/http.dart' as http;
 
 class ContactSection extends StatefulWidget {
-  const ContactSection({super.key});
+  final bool isActive;
+
+  const ContactSection({super.key, this.isActive = false});
 
   @override
   State<ContactSection> createState() => _ContactSectionState();
@@ -99,7 +102,7 @@ class _ContactSectionState extends State<ContactSection>
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 120, horizontal: 20),
+      padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -123,16 +126,17 @@ class _ContactSectionState extends State<ContactSection>
             ),
           ),
           const SizedBox(height: 16),
-          const Text(
-            "Let's Work Together",
-            style: TextStyle(
-              fontSize: 48,
+          HoverTitle(
+            text: "Let's Work Together",
+            style: const TextStyle(
+              fontSize: 36,
               fontWeight: FontWeight.w900,
               color: Colors.white,
               letterSpacing: -1,
             ),
+            isActive: widget.isActive,
           ),
-          const SizedBox(height: 80),
+          const SizedBox(height: 40),
           AnimatedBuilder(
             animation: _floatController,
             builder: (context, child) {
@@ -149,56 +153,59 @@ class _ContactSectionState extends State<ContactSection>
   }
 
   Widget _buildCosmicForm() {
-    return Container(
-      width: 450,
-      padding: const EdgeInsets.all(3),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(35),
-        gradient: const LinearGradient(
-          colors: [
-            Color(0xFF6366F1),
-            Color(0xFFA855F7),
-            Color(0xFF4F8CFF),
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 450),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(3),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(35),
+          gradient: const LinearGradient(
+            colors: [
+              Color(0xFF6366F1),
+              Color(0xFFA855F7),
+              Color(0xFF4F8CFF),
+            ],
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF6366F1).withOpacity(0.5),
+              blurRadius: 50,
+              spreadRadius: 5,
+            ),
           ],
         ),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF6366F1).withOpacity(0.5),
-            blurRadius: 50,
-            spreadRadius: 5,
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(35),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
-          child: Container(
-            padding: const EdgeInsets.all(35),
-            decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.75),
-              borderRadius: BorderRadius.circular(35),
-            ),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      Expanded(child: _buildField("First Name", firstNameController)),
-                      const SizedBox(width: 25),
-                      Expanded(child: _buildField("Last Name", lastNameController)),
-                    ],
-                  ),
-                  const SizedBox(height: 25),
-                  _buildField("Email", emailController),
-                  const SizedBox(height: 25),
-                  _buildField("Subject", subjectController),
-                  const SizedBox(height: 25),
-                  _buildField("Message", messageController, maxLines: 5),
-                  const SizedBox(height: 50),
-                  _buildButton(),
-                ],
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(35),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.75),
+                borderRadius: BorderRadius.circular(35),
+              ),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(child: _buildField("First Name", firstNameController)),
+                        const SizedBox(width: 16),
+                        Expanded(child: _buildField("Last Name", lastNameController)),
+                      ],
+                    ),
+                    const SizedBox(height: 14),
+                    _buildField("Email", emailController),
+                    const SizedBox(height: 14),
+                    _buildField("Subject", subjectController),
+                    const SizedBox(height: 14),
+                    _buildField("Message", messageController, maxLines: 4),
+                    const SizedBox(height: 30),
+                    _buildButton(),
+                  ],
+                ),
               ),
             ),
           ),
@@ -230,14 +237,14 @@ class _ContactSectionState extends State<ContactSection>
           ),
         ),
         contentPadding:
-            const EdgeInsets.symmetric(vertical: 22, horizontal: 20),
+            const EdgeInsets.symmetric(vertical: 12, horizontal: 14),
       ),
     );
   }
 
   Widget _buildButton() {
     return Container(
-      height: 65,
+      height: 48,
       width: double.infinity,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(18),

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import '../widgets/hover_title.dart';
 
 class SkillsSection extends StatelessWidget {
-  const SkillsSection({super.key});
+  final bool isActive;
+
+  const SkillsSection({super.key, this.isActive = false});
 
   @override
   Widget build(BuildContext context) {
@@ -29,13 +32,14 @@ class SkillsSection extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 10),
-          const Text(
-            "My Skills",
-            style: TextStyle(
+          HoverTitle(
+            text: "My Skills",
+            style: const TextStyle(
               fontSize: 44,
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
+            isActive: isActive,
           ),
           const SizedBox(height: 70),
 

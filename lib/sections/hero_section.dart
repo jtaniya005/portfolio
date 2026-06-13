@@ -53,7 +53,6 @@ class HeroSection extends StatelessWidget {
                       Color(0xFF4F8CFF),
                       Color(0xFFA855F7),
                     ],
-
                   ),
                 ),
 
@@ -82,8 +81,8 @@ class HeroSection extends StatelessWidget {
                     repeatForever: true,
                     animatedTexts: [
                       TyperAnimatedText('Flutter Developer'),
-                      TyperAnimatedText('AI Enthusiast'),
-                      TyperAnimatedText('Full Stack Explorer'),
+                      TyperAnimatedText('AI & ML Enthusiast'),
+                      TyperAnimatedText('Full Stack Developer'),
                       TyperAnimatedText('Dart & Flutter Developer'),
                       TyperAnimatedText('Python & Django Developer'),
                     ],
@@ -96,16 +95,16 @@ class HeroSection extends StatelessWidget {
 
                 const SizedBox(height: 20),
 
-                // Skill chips
+                // Skill tags (glow on hover, no scale)
                 Wrap(
                   spacing: 10,
                   runSpacing: 10,
                   children: const [
-                    Chip(label: Text('Flutter')),
-                    Chip(label: Text('Dart')),
-                    Chip(label: Text('Firebase')),
-                    Chip(label: Text('Django')),
-                    Chip(label: Text('REST APIs')),
+                    _HoverTag(label: 'Flutter'),
+                    _HoverTag(label: 'Dart'),
+                    _HoverTag(label: 'Firebase'),
+                    _HoverTag(label: 'Django'),
+                    _HoverTag(label: 'REST APIs'),
                   ],
                 ),
 
@@ -120,7 +119,7 @@ class HeroSection extends StatelessWidget {
           const Expanded(
             child: Center(
               child: Text(
-                "👩‍💻",
+                "👩",
                 style: TextStyle(fontSize: 150),
               ),
             ),
@@ -266,12 +265,16 @@ class _HoverIconState extends State<_HoverIcon> {
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: isHovered
-                ? widget.brandColor.withOpacity(0.15)
+                ? (widget.brandColor.computeLuminance() < 0.5
+                    ? Colors.white.withOpacity(0.06)
+                    : widget.brandColor.withOpacity(0.15))
                 : Colors.white.withOpacity(0.05),
             boxShadow: isHovered
                 ? [
                     BoxShadow(
-                      color: widget.brandColor.withOpacity(0.6),
+                      color: widget.brandColor.computeLuminance() < 0.5
+                          ? Colors.white.withOpacity(0.6)
+                          : widget.brandColor.withOpacity(0.6),
                       blurRadius: 20,
                       spreadRadius: 2,
                     ),
@@ -279,13 +282,15 @@ class _HoverIconState extends State<_HoverIcon> {
                 : [],
             border: Border.all(
               color: isHovered
-                  ? widget.brandColor
+                  ? (widget.brandColor.computeLuminance() < 0.5 ? Colors.white : widget.brandColor)
                   : const Color(0xFF4F8CFF),
             ),
           ),
           child: FaIcon(
             widget.icon,
-            color: isHovered ? widget.brandColor : Colors.white,
+            color: isHovered
+                ? (widget.brandColor.computeLuminance() < 0.5 ? Colors.white : widget.brandColor)
+                : Colors.white,
             size: 20,
           ),
         ),
@@ -293,3 +298,57 @@ class _HoverIconState extends State<_HoverIcon> {
     );
   }
 }
+
+class _HoverTag extends StatefulWidget {
+  final String label;
+
+  const _HoverTag({required this.label});
+
+  @override
+  State<_HoverTag> createState() => _HoverTagState();
+}
+
+class _HoverTagState extends State<_HoverTag> {
+  bool isHovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    const glowColor = Color(0xFF4F8CFF);
+
+    return MouseRegion(
+      onEnter: (_) => setState(() => isHovered = true),
+      onExit: (_) => setState(() => isHovered = false),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: isHovered
+              ? glowColor.withOpacity(0.08)
+              : Colors.white.withOpacity(0.03),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isHovered ? glowColor : Colors.transparent,
+          ),
+          boxShadow: isHovered
+              ? [
+                  BoxShadow(
+                    color: glowColor.withOpacity(0.25),
+                    blurRadius: 18,
+                    spreadRadius: 2,
+                  ),
+                ]
+              : [],
+        ),
+        child: Text(
+          widget.label,
+          style: TextStyle(
+            color: isHovered ? glowColor : Colors.white70,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
