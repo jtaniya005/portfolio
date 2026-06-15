@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../widgets/hover_title.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'dart:math' as math;
 
 class ProjectsSection extends StatelessWidget {
   final bool isActive;
@@ -9,8 +10,11 @@ class ProjectsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final horizontalPadding = screenWidth > 1000 ? 80.0 : (screenWidth > 600 ? 40.0 : 16.0);
+
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 100, horizontal: 80),
+      padding: EdgeInsets.symmetric(vertical: 100, horizontal: horizontalPadding),
       decoration: const BoxDecoration(
         gradient: RadialGradient(
           center: Alignment.topCenter,
@@ -112,9 +116,9 @@ class _ProjectCardState extends State<ProjectCard> {
       onEnter: (_) => setState(() => isHovered = true),
       onExit: (_) => setState(() => isHovered = false),
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        width: 340,
-        height: 420, // 
+      duration: const Duration(milliseconds: 300),
+      width: math.min(340, MediaQuery.of(context).size.width * 0.9),
+      height: math.min(420, MediaQuery.of(context).size.height * 0.6),
         transform: isHovered
             ? (Matrix4.identity()..translate(0, -10))
             : Matrix4.identity(),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../widgets/hover_title.dart';
+import 'dart:math' as math;
 
 class SkillsSection extends StatelessWidget {
   final bool isActive;
@@ -8,9 +9,12 @@ class SkillsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final horizontalPadding = screenWidth > 1000 ? 100.0 : (screenWidth > 600 ? 50.0 : 20.0);
+
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 120),
+      padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: 120),
       decoration: const BoxDecoration(
         gradient: RadialGradient(
           center: Alignment.topCenter,
@@ -88,7 +92,7 @@ class _CosmicSkillCardState extends State<CosmicSkillCard> {
       onExit: (_) => setState(() => isHovered = false),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
-        width: 280,
+        width: math.min(280, MediaQuery.of(context).size.width * 0.9),
         padding: const EdgeInsets.all(28),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
